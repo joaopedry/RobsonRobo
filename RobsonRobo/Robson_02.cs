@@ -31,48 +31,47 @@ namespace RobsonRobo
             
             while (true)
             {
-                SetTurnGunRight(20);
-                Execute();
+                SetTurnRight(10000);
+                // Limit our speed to 5
+                MaxVelocity = 5;
+                // Start moving (and turning)
+                Ahead(10000);
             }
         }
         //Inimigo scaneado
         public override void OnScannedRobot(ScannedRobotEvent e)
         {
-
-            double absoluteBearing = Heading + e.Bearing;
-            double bearingFromGun = Utils.NormalRelativeAngleDegrees(absoluteBearing - GunHeading);
-
-            if (Math.Abs(bearingFromGun) <= 3)
+            //Se distancia for menor que 50 e energia maior que 50, usar fire 3
+            if (e.Distance < 50 && Energy > 50)
             {
-                TurnGunRight(bearingFromGun);
-
-                if (GunHeat == 0)
-                {
-                    Fire(Math.Min(3 - Math.Abs(bearingFromGun), Energy - .1));
-                }
+                Fire(3);
+                Back(90);
             }
+            //Se não usa fire 1
             else
             {
-
-                TurnGunRight(bearingFromGun);
+                count = count + 1;
+                if (count % 2 == 0)
+                {
+                    Fire(1);
+                    Fire(1);
+                }
+                else
+                {
+                    Fire(2);
+                }
             }
-
-            if (bearingFromGun == 0)
-            {
-                Scan();
-            }
-
+            //depois de atirar scannear novamente
+            Scan();
         }
         //Se for atingido por uma bala
         public override void OnHitByBullet(HitByBulletEvent e)
         {
-            SetAhead(100);
-            SetTurnLeft(90);
             TurnRight(Utils.NormalRelativeAngleDegrees(90 - (Heading - e.Heading)));
 
-            //Ahead(distancia);
-            //distancia *= -1;
-            //Scan();
+            Ahead(distancia);
+            distancia *= -1;
+            Scan();
             
         }
         //Quando acertar robo
@@ -81,22 +80,12 @@ namespace RobsonRobo
             double turnGunAmt = Utils.NormalRelativeAngleDegrees(e.Bearing + Heading - GunHeading);
 
             TurnGunRight(turnGunAmt);
-            SetBack(15);
-            Fire(3);
+            Fire(2);
         }
-
-        public override void OnHitWall(HitWallEvent evnt)
-        {
-            SetBack(100);
-            SetTurnRight(90);
-            Execute();
-        }
-
-
         public override void OnBulletMissed(BulletMissedEvent e)
         {
 
-            if (Perdido > 2)
+            if (Perdido > 10)
             {
                 Perdido = 0;
                 MudarPosicao();
