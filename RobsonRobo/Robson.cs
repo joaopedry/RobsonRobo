@@ -28,7 +28,7 @@ namespace RobsonRobo
             RadarColor = (Color.White);
             //Cor do Scan
             ScanColor = (Color.Blue);
-            
+
             while (true)
             {
                 SetTurnGunRight(20);
@@ -67,20 +67,12 @@ namespace RobsonRobo
         public override void OnHitByBullet(HitByBulletEvent e)
         {
             SetAhead(100);
-            SetTurnLeft(90);
-            TurnRight(Utils.NormalRelativeAngleDegrees(90 - (Heading - e.Heading)));
-
-            //Ahead(distancia);
-            //distancia *= -1;
-            //Scan();
-            
+            SetTurnRight(90);
+            Execute();
         }
         //Quando acertar robo
         public override void OnHitRobot(HitRobotEvent e)
         {
-            double turnGunAmt = Utils.NormalRelativeAngleDegrees(e.Bearing + Heading - GunHeading);
-
-            TurnGunRight(turnGunAmt);
             SetBack(15);
             Fire(3);
         }
@@ -115,6 +107,12 @@ namespace RobsonRobo
         {
             TurnLeft(90);
             Ahead(150);
+        }
+        public override void OnBulletHitBullet(BulletHitBulletEvent evnt)
+        {
+            SetTurnLeft(45);
+            SetAhead(150);
+            Execute();
         }
     }
 }
